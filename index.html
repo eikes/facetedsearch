@@ -56,6 +56,17 @@
         font-weight: bold;
         color: gray;
       }
+      #showmorebutton {
+        border: 1px solid #AAA;
+        border-radius: 15px;
+        background-color: #DDD;
+        margin: 0 0 10px 0;
+        padding: 10px;
+        width: 100%;
+        display: block;
+        text-align: center;
+        cursor: pointer;
+      }
 
       /* These styles are just general purpose styles to make the page look a little less aweful */
 
@@ -86,10 +97,11 @@
     </style>
   </head>
   <body>
+    <a href="http://github.com/eikes/facetedsearch"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/7afbc8b248c68eb468279e8c17986ad46549fb71/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub"></a>
     <div id=wrapper>
       <div id=description>
         <h1>Faceted Search JavaScript Library</h1>
-        <h2>This JS lib lets you filter, sort and display large datasets on the client side, think map-reduce in the browser.</h2>
+        <h2>This JS lib lets you filter, sort and display large datasets in the browser.</h2>
         <p>
           When you have a list of items which share a lot of keys such as these:
         </p> 
@@ -142,20 +154,17 @@
              '<p class="desc"><%= description %></p>' +
            '</div>';
         settings = { 
-          items           : example_items,
-          facets          : { 
+          items            : example_items,
+          facets           : { 
                               'category'     : 'What Category',
                               'continent'    : 'Which Continent',
                               'language'     : 'Programming Language'
           },  
-          resultSelector  : '#results',
-          facetSelector   : '#facets',
-          resultTemplate  : item_template,
-          orderByOptions  : {'firstname': 'First name', 'lastname': 'Last name', 'category': 'Category', 'RANDOM': 'Random'},
-          state           : { 
-                              orderBy : 'RANDOM',
-                              filters: {} 
-          }   
+          resultSelector   : '#results',
+          facetSelector    : '#facets',
+          resultTemplate   : item_template,
+          paginationCount  : 50,
+          orderByOptions   : {'firstname': 'First name', 'lastname': 'Last name', 'category': 'Category', 'RANDOM': 'Random'}
         }   
 
         // use them!
@@ -1090,7 +1099,10 @@
       <p><tt>facetSelector</tt> : This is the selector which is used to find the DOM-node where the facets are displayed.</p>
       <p><tt>resultSelector</tt> : This is the selector which is used to find the DOM-node where the results are displayed.</p>
       <p><tt>resultTemplate</tt> : A string that is used by the <a href="http://documentcloud.github.com/underscore/#template">underscore templating system</a> to render each item from the filtered and sorted results.</p>
-      <p><tt>state</tt> : This object stores the current filters, sort option, <tt>currentResult</tt> and other things. Right now you need to provide a <tt>orderBy</tt> string and an empty <tt>filters</tt> object as you can see in the example code, this will be fixed.</p>
+      <p><tt>state</tt> : This object stores the current filters, sort option, <tt>currentResult</tt> and other things. You can provide a <tt>orderBy</tt> string or an <tt>filters</tt> object to preset those.</p>
+      <p><tt>enablePagination</tt> : Boolean to enable the pagination / "load more" functionality, defaults to true.</p>
+      <p><tt>paginationCount</tt> : If pagination is enabled, set the number of items to display in a batch, defaults to 50.</p>
+      
       <p>There are some more templates, please have a look at the source of the <a href="facetedsearch.js">facetedsearch.js</a> to see all available template options.</a>
       
       <h3>Events</h3>
@@ -1151,11 +1163,7 @@
         resultSelector  : '#results',
         facetSelector   : '#facets',
         resultTemplate  : item_template,
-        orderByOptions  : {'firstname': 'First name', 'lastname': 'Last name', 'category': 'Category', 'RANDOM': 'Random'},
-        state           : { 
-                            orderBy : 'RANDOM',
-                            filters: {} 
-        }   
+        orderByOptions  : {'firstname': 'First name', 'lastname': 'Last name', 'category': 'Category', 'RANDOM': 'Random'}
       }   
       $(function(){
         $.facetelize(settings);

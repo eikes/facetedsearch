@@ -25,7 +25,10 @@ var defaults = {
   state              : {
                          orderBy : false,
                          filters : {}
-                       }
+                       },
+  showMoreTemplate   : '<a id=showmorebutton>Show more</a>',
+  enablePagination   : true,
+  paginationCount    : 20
 }
 
 /**
@@ -33,9 +36,9 @@ var defaults = {
  * jQuery namespace. Pass in your own settings (see above) to initialize
  * the faceted search
  */
-var settings;
+var settings = {};
 jQuery.facetelize = function(usersettings) {
-  settings = _.defaults(usersettings, defaults);
+  $.extend(settings, defaults, usersettings);
   settings.currentResults = [];
   settings.facetStore     = {};
   initFacetCount();
@@ -140,6 +143,7 @@ function filter() {
       }
     });
   });
+  settings.state.shownResults = 0;
 }
 
 /**
@@ -281,11 +285,32 @@ function updateFacetUI() {
  */
 function updateResults() {
   $(settings.resultSelector).html("");
-  _.each(settings.currentResults, function(item){
+  showMoreResults();
+}
+
+var moreButton;
+function showMoreResults() {
+  var showNowCount = 
+      settings.enablePagination ? 
+      Math.min(settings.currentResults.length - settings.state.shownResults, settings.paginationCount) : 
+      settings.currentResults.length;
+  for (var i = settings.state.shownResults; i < settings.state.shownResults + showNowCount; i++) {
+    var item = settings.currentResults[i];
     var template = _.template(settings.resultTemplate);
     var itemHtml = $(template(item));
     $(settings.resultSelector).append(itemHtml);
-  });
+  }
+  if (!moreButton) {
+    moreButton = $(settings.showMoreTemplate).click(showMoreResults);
+    $(settings.resultSelector).after(moreButton);
+  }
+  if (settings.state.shownResults == 0) {
+    moreButton.show();
+  }
+  settings.state.shownResults += showNowCount;
+  if (settings.state.shownResults == settings.currentResults.length) {
+    $(moreButton).hide();
+  }
   $(settings.resultSelector).trigger("facatedsearchresultupdate");
 }
 
