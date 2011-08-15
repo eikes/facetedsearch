@@ -20,6 +20,7 @@ var defaults = {
                        '<li class=orderbyitem id=orderby_<%= key %>>'+
                        '<%= value %> </li> <% }); %></ul></div>',
   countTemplate      : '<div class=facettotalcount><%= count %> Results</div>',
+  deselectTemplate   : '<div class=deselectstartover>Deselect all filters</div>',
   resultTemplate     : '<div class=facetresultbox><%= name %></div>',
   orderByOptions     : {'a': 'by A', 'b': 'by B', 'RANDOM': 'by random'},
   state              : {
@@ -241,6 +242,12 @@ function createFacetUI() {
     order();
     updateResults();
   });
+  // Append deselect filters button
+  var deselect = $(settings.deselectTemplate).click(function(event){
+    settings.state.filters = [];
+    jQuery.facetUpdate();
+  });
+  $(bottom).append(deselect);
 }
 
 /**
