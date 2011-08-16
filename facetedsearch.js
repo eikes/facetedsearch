@@ -214,7 +214,7 @@ function createFacetUI() {
   $('.facetitem').click(function(event){
     var filter = getFilterById(this.id);
     toggleFilter(filter.facetname, filter.filtername);
-    $(settings.facetSelector).trigger("facatedsearchfacetclick", filter);
+    $(settings.facetSelector).trigger("facetedsearchfacetclick", filter);
     order();
     updateFacetUI();
     updateResults();
@@ -238,7 +238,7 @@ function createFacetUI() {
   $('.orderbyitem').click(function(event){
     var id = this.id.substr(8);
     settings.state.orderBy = id;
-    $(settings.facetSelector).trigger("facatedsearchorderby", id);
+    $(settings.facetSelector).trigger("facetedsearchorderby", id);
     order();
     updateResults();
   });
@@ -248,6 +248,7 @@ function createFacetUI() {
     jQuery.facetUpdate();
   });
   $(bottom).append(deselect);
+  $(settings.facetSelector).trigger("facetuicreated");
 }
 
 /**
@@ -318,7 +319,7 @@ function showMoreResults() {
   if (settings.state.shownResults == settings.currentResults.length) {
     $(moreButton).hide();
   }
-  $(settings.resultSelector).trigger("facatedsearchresultupdate");
+  $(settings.resultSelector).trigger("facetedsearchresultupdate");
 }
 
 })();

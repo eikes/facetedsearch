@@ -1110,11 +1110,12 @@
       
       <h3>Events</h3>
       <p>You can bind to some Events to be notified when some actions have happened. This uses the jquery event system. They are:</p>
-      <p><tt>facatedsearchresultupdate</tt> : You can bind to this function on the settings.resultSelector DOM node to be notified when the results have been updated.</p>
-      <p><tt>facatedsearchfacetclick</tt> : This event is fired when a facet is clicked and it is fired on the settings.facetSelector node. It receives the id of the facet as an argument. </p>
-      <p><tt>facatedsearchorderby</tt> : This event is fired when a sortby item is clicked and it is fired on the settings.facetSelector node. It receives the id of the orderby as an argument. </p>
+      <p><tt>facetuicreated</tt> : You can bind to this function on the settings.facetSelector DOM node to be notified when the UI has been created.</p>
+      <p><tt>facetedsearchresultupdate</tt> : You can bind to this function on the settings.resultSelector DOM node to be notified when the results have been updated.</p>
+      <p><tt>facetedsearchfacetclick</tt> : This event is fired when a facet is clicked and it is fired on the settings.facetSelector node. It receives the id of the facet as an argument. </p>
+      <p><tt>facetedsearchorderby</tt> : This event is fired when a sortby item is clicked and it is fired on the settings.facetSelector node. It receives the id of the orderby as an argument. </p>
       <pre>
-        $(settings.resultSelector).bind("facatedsearchresultupdate", function(){
+        $(settings.resultSelector).bind("facetedsearchresultupdate", function(){
           // do something, maybe 
         });
       </pre>
