@@ -170,6 +170,7 @@ function order() {
  * be filtered again and the UI is updated accordingly.
  */
 function toggleFilter(key, value) {
+  console.log(settings.state.filters);
   settings.state.filters[key] = settings.state.filters[key] || [] ;
   if (_.indexOf(settings.state.filters[key], value) == -1) {
     settings.state.filters[key].push(value);
@@ -244,7 +245,7 @@ function createFacetUI() {
   });
   // Append deselect filters button
   var deselect = $(settings.deselectTemplate).click(function(event){
-    settings.state.filters = [];
+    settings.state.filters = {};
     jQuery.facetUpdate();
   });
   $(bottom).append(deselect);
