@@ -22,6 +22,7 @@ var defaults = {
   countTemplate      : '<div class=facettotalcount><%= count %> Results</div>',
   deselectTemplate   : '<div class=deselectstartover>Deselect all filters</div>',
   resultTemplate     : '<div class=facetresultbox><%= name %></div>',
+  noResults          : '<div class=results>Sorry, but no items match these criteria</div>',
   orderByOptions     : {'a': 'by A', 'b': 'by B', 'RANDOM': 'by random'},
   state              : {
                          orderBy : false,
@@ -42,6 +43,7 @@ jQuery.facetelize = function(usersettings) {
   $.extend(settings, defaults, usersettings);
   settings.currentResults = [];
   settings.facetStore     = {};
+  $(settings.facetSelector).data("settings", settings);
   initFacetCount();
   filter();
   order();
@@ -292,7 +294,7 @@ function updateFacetUI() {
  * Updates the the list of results according to the filters that have been set
  */
 function updateResults() {
-  $(settings.resultSelector).html("");
+  $(settings.resultSelector).html(settings.currentResults.length == 0 ? settings.noResults : "");
   showMoreResults();
 }
 
