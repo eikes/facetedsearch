@@ -304,12 +304,17 @@ function showMoreResults() {
       settings.enablePagination ? 
       Math.min(settings.currentResults.length - settings.state.shownResults, settings.paginationCount) : 
       settings.currentResults.length;
+  var itemHtml = "";
   for (var i = settings.state.shownResults; i < settings.state.shownResults + showNowCount; i++) {
-    var item = settings.currentResults[i];
+    var item = $.extend(settings.currentResults[i], {
+      totalItemNr    : i,
+      batchItemNr    : i - settings.state.shownResults,
+      batchItemCount : showNowCount
+    });
     var template = _.template(settings.resultTemplate);
-    var itemHtml = $(template(item));
-    $(settings.resultSelector).append(itemHtml);
+    var itemHtml = itemHtml + template(item);
   }
+  $(settings.resultSelector).append(itemHtml);
   if (!moreButton) {
     moreButton = $(settings.showMoreTemplate).click(showMoreResults);
     $(settings.resultSelector).after(moreButton);
