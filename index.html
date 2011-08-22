@@ -1101,7 +1101,7 @@
       <p><tt>orderByOptions</tt> : Just like the facets, except that these key-value pairs are used for sorting only. When the key <tt>RANDOM</tt> is included, the results can be randomized.</p>
       <p><tt>facetSelector</tt> : This is the selector which is used to find the DOM-node where the facets are displayed.</p>
       <p><tt>resultSelector</tt> : This is the selector which is used to find the DOM-node where the results are displayed.</p>
-      <p><tt>resultTemplate</tt> : A string that is used by the <a href="http://documentcloud.github.com/underscore/#template">underscore templating system</a> to render each item from the filtered and sorted results.</p>
+      <p><tt>resultTemplate</tt> : A string that is used by the <a href="http://documentcloud.github.com/underscore/#template">underscore templating system</a> to render each item from the <tt>items</tt> array. The following attributes are added to each item which can be used in the template as well: batchItemNr, batchItemCount and totalItemCount.</p>
       <p><tt>state</tt> : This object stores the current filters, sort option, <tt>currentResult</tt> and other things. You can provide a <tt>orderBy</tt> string or an <tt>filters</tt> object to preset those.</p>
       <p><tt>enablePagination</tt> : Boolean to enable the pagination / "load more" functionality, defaults to true.</p>
       <p><tt>paginationCount</tt> : If pagination is enabled, set the number of items to display in a batch, defaults to 50.</p>
