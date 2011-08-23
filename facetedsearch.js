@@ -177,6 +177,9 @@ function toggleFilter(key, value) {
     settings.state.filters[key].push(value);
   } else {
     settings.state.filters[key] = _.without(settings.state.filters[key], value);
+    if (settings.state.filters[key].length == 0) {
+      delete settings.state.filters[key];
+    }
   }
   filter();
 }
