@@ -89,6 +89,9 @@ function initFacetCount() {
   // sort it:
   _.each(settings.facetStore, function(facet, facettitle) {
     var sorted = _.keys(settings.facetStore[facettitle]).sort();
+    if (settings.facetSortOption && settings.facetSortOption[facettitle]) {
+      sorted = _.union(settings.facetSortOption[facettitle], sorted);
+    }
     var sortedstore = {};
     _.each(sorted, function(el) {
       sortedstore[el] = settings.facetStore[facettitle][el];
