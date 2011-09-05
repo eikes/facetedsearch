@@ -152,7 +152,7 @@ function filter() {
   // remove confusing 0 from facets where a filter has been set
   _.each(settings.state.filters, function(filters, facettitle) {
     _.each(settings.facetStore[facettitle], function(facet) {
-      if (facet.count == 0) facet.count = "+";
+      if (facet.count == 0 && settings.state.filters[facettitle].length) facet.count = "+";
     });
   });
   settings.state.shownResults = 0;
