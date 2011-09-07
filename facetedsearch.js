@@ -82,7 +82,9 @@ function initFacetCount() {
           settings.facetStore[facet][facetitem] = settings.facetStore[facet][facetitem] || {count: 0, id: _.uniqueId("facet_")}
         });
       } else {
-        settings.facetStore[facet][item[facet]] = settings.facetStore[facet][item[facet]] || {count: 0, id: _.uniqueId("facet_")}
+        if (item[facet] !== undefined) {
+          settings.facetStore[facet][item[facet]] = settings.facetStore[facet][item[facet]] || {count: 0, id: _.uniqueId("facet_")}
+        }
       }
     });
   });
@@ -145,7 +147,9 @@ function filter() {
           settings.facetStore[facet][facetitem].count += 1;
         });
       } else {
-        settings.facetStore[facet][item[facet]].count += 1;
+        if (item[facet] !== undefined) {
+          settings.facetStore[facet][item[facet]].count += 1;
+        }
       }
     });
   });
@@ -317,13 +321,13 @@ function showMoreResults() {
       Math.min(settings.currentResults.length - settings.state.shownResults, settings.paginationCount) : 
       settings.currentResults.length;
   var itemHtml = "";
+  var template = _.template(settings.resultTemplate);
   for (var i = settings.state.shownResults; i < settings.state.shownResults + showNowCount; i++) {
     var item = $.extend(settings.currentResults[i], {
       totalItemNr    : i,
       batchItemNr    : i - settings.state.shownResults,
       batchItemCount : showNowCount
     });
-    var template = _.template(settings.resultTemplate);
     var itemHtml = itemHtml + template(item);
   }
   $(settings.resultSelector).append(itemHtml);
