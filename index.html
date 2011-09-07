@@ -125,7 +125,6 @@
             "imageURL": "http://flickholdr.iwerk.org/150/100/Lion/1",
             "description": "Ut Takimata Sit Aliquyam Labore Aliquyam Sit Sit Lorem Amet. Ipsum Rebum. ",
             "category": "Lion",
-            "language": "Lisp",
             "continent": "North America"
             },
             ...
@@ -149,12 +148,14 @@
       $(function(){
           var item_template = 
            '<div class="item">' +
-             '<img src="<%= imageURL %>">' +
-             '<h4><%= lastname %>, <%= firstname %></h4>' + 
+             '<img src="<%= obj.imageURL %>">' +
+             '<h4><%= obj.lastname %>, <%= obj.firstname %></h4>' + 
              '<p class="tags">' + 
-              '<%= category %>, <%= continent %>, <%= language %>' +
+             '<% if (obj.category) {  %><%= obj.category %><% } %>' +
+             '<% if (obj.continent) {  %>, <%= obj.continent %><% } %>' +
+             '<% if (obj.language) {  %>, <%= obj.language %><% } %>' +
              '</p>' +
-             '<p class="desc"><%= description %></p>' +
+             '<p class="desc"><%= obj.description %></p>' +
            '</div>';
         settings = { 
           items            : example_items,
@@ -325,7 +326,6 @@
           "imageURL": "http://flickholdr.iwerk.org/150/100/Horse/15",
           "description": "Sed Est Sea Et Dolores Sea Dolores ",
           "category": "Horse",
-          "language": "Basic",
           "continent": "South America"
         },
         {
@@ -1155,12 +1155,14 @@
         }];
       var item_template = 
        '&lt;div class="item">' +
-         '&lt;img src="&lt;%= imageURL %>">' +
-         '&lt;h4>&lt;%= lastname %>, &lt;%= firstname %>&lt;/h4>' + 
-         '&lt;p class="desc">&lt;%= description %>&lt;/p>' +
+         '&lt;img src="&lt;%= obj.imageURL %>">' +
+         '&lt;h4>&lt;%= obj.lastname %>, &lt;%= obj.firstname %>&lt;/h4>' + 
          '&lt;p class="tags">' + 
-          '&lt;%= category %>, &lt;%= continent %>, &lt;%= language %>' +
+         '&lt;% if (obj.category) {  %>&lt;%= obj.category %>&lt;% } %>' +
+         '&lt;% if (obj.continent) {  %>, &lt;%= obj.continent %>&lt;% } %>' +
+         '&lt;% if (obj.language) {  %>, &lt;%= obj.language %>&lt;% } %>' +
          '&lt;/p>' +
+         '&lt;p class="desc">&lt;%= obj.description %>&lt;/p>' +
        '&lt;/div>';
       var settings = { 
         items           : example_items,
