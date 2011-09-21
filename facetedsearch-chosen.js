@@ -31,7 +31,7 @@
       options = _.defaults(options || {}, {
         emptyText      : "Select Options"
       });
-      $this = $(this);
+      var $this = $(this);
       $this.find('.facetlist .facetitem').hide();
       $this.find('.facetlist').css("overflow", "visible");
       var isRmAll = false;
