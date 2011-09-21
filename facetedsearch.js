@@ -246,7 +246,7 @@ function createFacetUI() {
   var itemHtml = $(ordertemplate({'options': settings.orderByOptions}));
   $(bottom).append(itemHtml);
   $(settings.facetSelector).append(bottom);
-  $('.orderbyitem').each(function(event){
+  $('.orderbyitem').each(function(){
     var id = this.id.substr(8);
     if (settings.state.orderBy == id) {
       $(this).addClass("activeorderby");
@@ -257,6 +257,7 @@ function createFacetUI() {
     var id = this.id.substr(8);
     settings.state.orderBy = id;
     $(settings.facetSelector).trigger("facetedsearchorderby", id);
+    settings.state.shownResults = 0;
     order();
     updateResults();
   });
