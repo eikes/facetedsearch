@@ -39,12 +39,6 @@
       #language {
         width: 400px;
       }
-      #language .facetlist{
-        column-count: 2;
-        -webkit-column-count: 2;
-        -moz-column-count: 2;
-        -o-column-count: 2;
-      }
       .item {
         width: 150px;
         height: 250px;
@@ -69,6 +63,9 @@
         display: block;
         text-align: center;
         cursor: pointer;
+      }
+      .facetSelectBox {
+        width: 100%;
       }
 
       /* These styles are just general purpose styles to make the page look a little less aweful */
@@ -141,9 +138,12 @@
       <div id=facets></div>
       <div id=results></div>
     </div>
+    <link rel="stylesheet" type="text/css" href="dependencies/chosen.css">
     <script src="dependencies/jquery-1.6.2.js"></script>
-    <script src="dependencies/underscore-1.1.7.js"></script>
+    <script src="dependencies/chosen.jquery.js"></script>
+    <script src="dependencies/underscore-1.1.7.patched.js"></script>
     <script src="facetedsearch.js"></script>
+    <script src="facetedsearch-chosen.js"></script>
     <script>
       $(function(){
           var item_template = 
@@ -171,6 +171,11 @@
           orderByOptions   : {'firstname': 'First name', 'lastname': 'Last name', 'category': 'Category', 'RANDOM': 'Random'},
           facetSortOption  : {'continent': ["North America", "South America"]}
         }   
+
+        $(settings.facetSelector).bind("facetuicreated", function(){
+          $('#language .facetitem span').remove();
+          $('#language').replaceFacetWithChosen({"emptyText": "Select Languages"});
+        });
 
         // use them!
         $.facetelize(settings);
