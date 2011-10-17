@@ -140,10 +140,8 @@
     </div>
     <link rel="stylesheet" type="text/css" href="dependencies/chosen.css">
     <script src="dependencies/jquery-1.6.2.js"></script>
-    <script src="dependencies/chosen.jquery.js"></script>
     <script src="dependencies/underscore-1.1.7.patched.js"></script>
-    <script src="facetedsearch.js"></script>
-    <script src="facetedsearch-chosen.js"></script>
+    <script src="dependencies/backbone.js"></script>
     <script>
       $(function(){
           var item_template = 
@@ -168,21 +166,81 @@
           facetSelector    : '#facets',
           resultTemplate   : item_template,
           paginationCount  : 50,
-          orderByOptions   : {'firstname': 'First name', 'lastname': 'Last name', 'category': 'Category', 'RANDOM': 'Random'},
-          facetSortOption  : {'continent': ["North America", "South America"]}
-        }   
-
-        $(settings.facetSelector).bind("facetuicreated", function(){
-          $('#language .facetitem span').remove();
-          // Here is where the 'Language' facet is replaced with a 'chosen' widget
-          $('#language').replaceFacetWithChosen({"emptyText": "Select Languages"});
+          orderByOptions   : {'firstname': 'First name', 'lastname': 'Last name', 'category': 'Category', 'RANDOM': 'Random'}
+        }
+        var Item = Backbone.Model.extend({
+          defaults: function() {
+            return {
+              visible: true, 
+              content: {}
+            };
+          },
+          applyFilters: function(filters) {
+            // todo; compare filters with this.content and set this.visible accordingly
+            console.log(this, arguments);
+          }
         });
-
-        // use them!
-        $.facetelize(settings);
-
+        var ItemList = Backbone.Collection.extend({
+          model: Item,
+          getVisible: function() {
+            return this.filter(function(item){ 
+              return item.get('visible'); 
+            });
+          }
+        });
+        var FacetItem = Backbone.Model.extend({
+          defaults: function() {
+            return {
+              active: false,
+              itemCount: 0,
+              name: ""
+            };
+          }
+        });
+        var Facet = Backbone.Collection.extend({
+          model: FacetItem,
+          getActive: function() {
+            return this.filter(function(facetItem){ 
+              return facetItem.get('active'); 
+            });
+          }
+        });
+        var FacetedSearch = Backbone.Model.extend({
+          items: [],
+          facets: [],
+          initialize: function(options) {
+            if (options && options.items) {
+              this.items = new ItemList(_.map(options.items, function(item) { 
+                return new Item({content: item});
+              }));
+            }
+            if (options && options.facets) {
+              _this = this;
+              var facetsList = _.map(options.facets, function(facetName, facet) {
+                var listOfFacetItemNames = _.uniq(_.flatten(_this.items.map(function(item) {
+                  var content = item.get("content"); 
+                  if (content && content[facet]) {
+                    return content[facet];
+                  }
+                })));
+                var result = new Facet(_.map(listOfFacetItemNames, function(facetname){
+                  return new FacetItem({name: facetname});
+                }));
+                // This is not quite by the book, but the collection needs to know its name...
+                result.facetName = facet;
+                result.facetDisplayName = facetName;
+                return result;
+              });
+              this.set({"facetsList": facetsList});
+            }
+          }
+        });
+        
+        // example items and stuff
+        var fs = new FacetedSearch(settings);
+        console.log(fs);
       });
-    </script>
+  </script>
     <script>
       // Most of the time I suppose you would use jQuery to get your data; 
       /*
