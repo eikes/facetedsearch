@@ -57,9 +57,12 @@ var FacetedSearch = Backbone.Model.extend({
         }
       });
       if (item.get("__visible__") != visible) {
-        item.set("__visible__", visible);
+        // This is silent, so the list is not repainted over and over again
+        item.set({"__visible__": visible}, {silent: true});
       }
     });
+    // Paint it once:
+    this.get("items").trigger("change:__visible__");
   },
   initialize: function(options) {
     // Find all items and convert them into Models in a Collection
