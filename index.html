@@ -150,7 +150,6 @@
     <script>
       //$(function(){
         var itemTemplate = 
-          '<div class="item">' +
             '<img src="<%= obj.imageURL %>">' +
             '<h4><%= obj.lastname %>, <%= obj.firstname %></h4>' + 
             '<p class="tags">' + 
@@ -158,8 +157,7 @@
             '<% if (obj.continent) {  %>, <%= obj.continent %><% } %>' +
             '<% if (obj.language) {  %>, <%= obj.language %><% } %>' +
             '</p>' +
-            '<p class="desc"><%= obj.description %></p>' +
-            '</div>';
+            '<p class="desc"><%= obj.description %></p>';
         var facetTemplate = 
             '<h3 class=facettitle><%= title %></h3>';
         var facetItemTemplate = 
@@ -193,7 +191,7 @@
           facetTemplate: settings.facetTemplate,
           facetItemTemplate: settings.facetItemTemplate,
           el: $(settings.facetSelector),
-          facets: fs.get("facetsList")
+          facets: fs.get("facets")
         });
         facetsView.render();
       //});
