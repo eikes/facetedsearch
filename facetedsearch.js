@@ -2,17 +2,13 @@
 var Item = Backbone.Model.extend({
   defaults: function() {
     return {
-      "__visible__": true
+      "__active__": true,
+      "__visible__": false
     };
   }
 });
 var ItemList = Backbone.Collection.extend({
-  model: Item,
-  getVisible: function() {
-    return this.filter(function(item){ 
-      return item.get('__visible__'); 
-    });
-  }
+  model: Item
 });
 var FacetItem = Backbone.Model.extend({
   defaults: function() {
@@ -39,14 +35,17 @@ var Facet = Backbone.Collection.extend({
 });
 var FacetedSearch = Backbone.Model.extend({
   update: function() {
+    this.updateActiveItems.call(this);
     this.updateVisibleItems.call(this);
     this.updateFacetCount.call(this);
   },
-  updateVisibleItems: function() {
+  // applies the filters as they are set in the facets
+  // to the items and sets the __active__ property accordingly
+  updateActiveItems: function() {
     var _this = this;
-    var visible, facetApplies, facetValue, facetName, itemValue;
+    var active, facetApplies, facetValue, facetName, itemValue;
     this.get("items").each(function(item) {
-      visible = true;
+      active = true;
       facetApplies = false;
       _.each(_this.get("facets"), function(facet){
         facetApplies = facet.any(function(facetItem){
@@ -62,14 +61,26 @@ var FacetedSearch = Backbone.Model.extend({
           }
         });
         if (facet.hasActive() && !facetApplies) {
-          visible = false;
+          active = false;
         }
       });
-      if (item.get("__visible__") != visible) {
-        item.set({"__visible__": visible});
+      item.set({"__active__": active});
+    });
+  },
+  // not all items which are active will be shown, show only the first X
+  updateVisibleItems: function() {
+    var visibleCount = 0, 
+        _this = this;
+    this.get("items").each(function(item){
+      if (item.get("__active__") && visibleCount < _this.get("visibleCount")) {
+        item.set({"__visible__": true});
+        visibleCount += 1;
+      } else {
+        item.set({"__visible__": false});
       }
     });
   },
+  // updates the count property of the facet items
   updateFacetCount: function() {
     var _this = this;
     var facetActive, facetValue, facetName, itemValue;
@@ -79,7 +90,7 @@ var FacetedSearch = Backbone.Model.extend({
       });
     });
     this.get("items").each(function(item){
-      if (item.get("__visible__")) {
+      if (item.get("__active__")) {
         _.each(_this.get("facets"), function(facet){
           facetActive = facet.hasActive();
           facet.each(function(facetItem) {
@@ -113,6 +124,8 @@ var FacetedSearch = Backbone.Model.extend({
       return new Item(item);
     }));
     this.set("items", items);
+    items.facetedSearch = this;
+    this.set("visibleCount", options.paginationCount);
     // Find and create all Facets and FacetItems
     var _this = this;
     var facets= _.map(options.facets, function(facetDisplayName, facetName) {
@@ -127,6 +140,7 @@ var FacetedSearch = Backbone.Model.extend({
       return facet;
     });
     this.set("facets", facets);
+    facets.facetedSearch = this;
     this.update();
   }
 });
@@ -134,29 +148,44 @@ var FacetedSearch = Backbone.Model.extend({
 // Views
 var ItemView = Backbone.View.extend({
   initialize: function() {
-    this.model.on("change:__visible__", function() {
-      this.el.style.display = this.model.get("__visible__") ? "" : "none";
-    }, this);
+    this.model.on("change:__visible__", this.updateVisible, this);
+  },
+  updateVisible: function() {
+    if (this.model.get("__visible__")) {
+      this.el.style.display = "";
+    } else {
+      this.el.style.display = "none";
+    }
   },
   className: "item",
   render: function() {
     var html = this.model.collection.itemTemplate(this.model.attributes);
-    this.$el.html(html);
+    this.el.innerHTML = html;
+    this.updateVisible();
   }
 });
 var ItemsView = Backbone.View.extend({
   initialize: function(options) {
     this.collection.itemTemplate = _.template(options.itemTemplate);
   },
+  events: {
+    "click button": function(){
+      var fs = this.collection.facetedSearch;
+      fs.set("visibleCount", fs.get("visibleCount") + fs.get("paginationCount"));
+      fs.update();
+    }
+  },
   render: function() {
-    var _this = this;
     var itemView;
+    this.el.innerHTML = this.options.itemsTemplate;
+    var div = this.el.getElementsByTagName("div")[0];
+    var button = this.el.getElementsByTagName("button")[0];
     this.collection.map(function(item, position) {
       itemView = new ItemView({
         model: item
       });
       itemView.render();
-      _this.$el.append(itemView.el);
+      div.appendChild(itemView.el);
     });
   }
 });
@@ -170,9 +199,11 @@ var FacetItemView = Backbone.View.extend({
   },
   updateActive: function() {
     if (this.model.get("active")) {
-      this.$el.addClass("activefacet");
+      if (!this.el.className.match("activefacet")) {
+        this.el.className = this.el.className += " activefacet";
+      }
     } else {
-      this.$el.removeClass("activefacet");
+      this.el.className = _.without(this.el.className.split(" "), "activefacet").join(" ");
     }
   },
   className: "facetitem",
@@ -182,10 +213,10 @@ var FacetItemView = Backbone.View.extend({
     }
   },
   render: function() {
-    this.$el.html(this.options.facetItemTemplateFunction({
+    this.el.innerHTML = this.options.facetItemTemplateFunction({
       name: this.model.get("name"),
       count: this.model.get("count"),
-    }));
+    });
     this.updateActive();
   }
 });
@@ -193,16 +224,16 @@ var FacetView = Backbone.View.extend({
   className: "facet",
   render: function() {
     var _this = this;
-    this.$el.html(this.options.facetTemplateFunction({
+    this.el.innerHTML = this.options.facetTemplateFunction({
       title: this.collection.facetDisplayName
-    }));
+    });
     this.collection.map(function(facetItem) {
       var facetItemView = new FacetItemView({
         facetItemTemplateFunction: _this.options.facetItemTemplateFunction,
         model: facetItem
       });
       facetItemView.render();
-      _this.$el.append(facetItemView.el);
+      _this.el.appendChild(facetItemView.el);
     });
   }
 });
@@ -222,7 +253,7 @@ var FacetsView = Backbone.View.extend({
         collection: facet
       });
       facetView.render();
-      _this.$el.append(facetView.el);
+      _this.el.appendChild(facetView.el);
     });
   },
 });

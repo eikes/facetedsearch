@@ -57,7 +57,7 @@
         font-weight: bold;
         color: gray;
       }
-      #showmorebutton {
+      #results button {
         border: 1px solid #AAA;
         border-radius: 15px;
         background-color: #DDD;
@@ -149,6 +149,8 @@
     <script src="example_items.js"></script>
     <script>
       //$(function(){
+        var itemsTemplate = 
+            '<div></div><button>Show More</button>';
         var itemTemplate = 
             '<img src="<%= obj.imageURL %>">' +
             '<h4><%= obj.lastname %>, <%= obj.firstname %></h4>' + 
@@ -170,33 +172,35 @@
                                 'continent' : 'Which Continent',
                                 'language'  : 'Programming Language'
           },  
-          resultSelector    : '#results',
-          facetSelector     : '#facets',
+          resultSelector    : 'results',
+          facetSelector     : 'facets',
           itemTemplate      : itemTemplate,
+          itemsTemplate     : itemsTemplate,
           facetTemplate     : facetTemplate,
           facetItemTemplate : facetItemTemplate,
-          paginationCount   : 50,
+          paginationCount   : 10,
           orderByOptions    : {'firstname': 'First name', 'lastname': 'Last name', 'category': 'Category', 'RANDOM': 'Random'}
         }
         
         // example items and stuff
         var fs = new FacetedSearch(settings);
         var itemsView = new ItemsView({
+          itemsTemplate: settings.itemsTemplate,
           itemTemplate: settings.itemTemplate,
-          el: $(settings.resultSelector),
+          el: document.getElementById(settings.resultSelector),
           collection: fs.get("items")
         });
         itemsView.render();
         var facetsView = new FacetsView({
           facetTemplate: settings.facetTemplate,
           facetItemTemplate: settings.facetItemTemplate,
-          el: $(settings.facetSelector),
+          el: document.getElementById(settings.facetSelector),
           facets: fs.get("facets")
         });
         facetsView.render();
       //});
     </script>
-    <div id=documentation name=documentation>
+    <div id=documentation>
 
       <h2>Documentation</h2>
       <p>This library depends on the existence of <a href="http://jquery.com/">jquery</a> and <a href="http://documentcloud.github.com/underscore/">underscore</a>.</p>
@@ -237,68 +241,6 @@
 
       <h3>Example Code</h3>
       <p>Here you can see a typical setup which includes a DOM-node to display the facets in and one where to display the results in.</p>
-<pre> 
-    &lt;div id=facets>&lt;/div>
-    &lt;div id=results>&lt;/div>
-    &lt;link rel="stylesheet" type="text/css" href="dependencies/chosen.css">
-    &lt;script src="dependencies/jquery-1.6.2.js">&lt;/script>
-    &lt;script src="dependencies/chosen.jquery.js">&lt;/script>
-    &lt;script src="dependencies/underscore-1.1.7.patched.js">&lt;/script>
-    &lt;script src="facetedsearch.js">&lt;/script>
-    &lt;script src="facetedsearch-chosen.js">&lt;/script>
-    &lt;script>
-      var example_items = [
-        {
-          "firstname": "Mary",
-          "lastname": "Smith",
-          "imageURL": "http://flickholdr.iwerk.org/150/100/Mouse/0",
-          "description": "Sed Ea Amet. Stet Voluptua. Nonumy Magna Takimata ",
-          "category": "Mouse",
-          "language": "XSLT",
-          "continent": "Africa"
-        },
-        {
-          "firstname": "Patricia",
-          "lastname": "Johnson",
-          "imageURL": "http://flickholdr.iwerk.org/150/100/Lion/1",
-          "description": "Ut Takimata Sit Aliquyam Labore Aliquyam Sit Sit Lorem Amet. Ipsum Rebum. ",
-          "category": "Lion",
-          "language": "Lisp",
-          "continent": "North America"
-        }];
-      var item_template = 
-       '&lt;div class="item">' +
-         '&lt;img src="&lt;%= obj.imageURL %>">' +
-         '&lt;h4>&lt;%= obj.lastname %>, &lt;%= obj.firstname %>&lt;/h4>' + 
-         '&lt;p class="tags">' + 
-         '&lt;% if (obj.category) {  %>&lt;%= obj.category %>&lt;% } %>' +
-         '&lt;% if (obj.continent) {  %>, &lt;%= obj.continent %>&lt;% } %>' +
-         '&lt;% if (obj.language) {  %>, &lt;%= obj.language %>&lt;% } %>' +
-         '&lt;/p>' +
-         '&lt;p class="desc">&lt;%= obj.description %>&lt;/p>' +
-       '&lt;/div>';
-      var settings = { 
-        items           : example_items,
-        facets          : { 
-                            'category'     : 'What Category',
-                            'continent'    : 'Which Continent',
-                            'language'     : 'Programming Language'
-        },  
-        resultSelector  : '#results',
-        facetSelector   : '#facets',
-        itemTemplate  : item_template,
-        orderByOptions  : {'firstname': 'First name', 'lastname': 'Last name', 'category': 'Category', 'RANDOM': 'Random'}
-      }   
-      $(function(){
-        $(settings.facetSelector).bind("facetuicreated", function(){
-          $('#language .facetitem span').remove();
-          // Here is where the 'Language' facet is replaced with a 'chosen' widget
-          $('#language').replaceFacetWithChosen({"emptyText": "Select Languages"});
-        });
-        $.facetelize(settings);
-      });
-    &lt;/script>
-</pre>
     </div>
   </body>
 </html>
