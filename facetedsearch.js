@@ -8,7 +8,12 @@ var Item = Backbone.Model.extend({
   }
 });
 var ItemList = Backbone.Collection.extend({
-  model: Item
+  model: Item,
+  getActive: function(){
+    return this.filter(function(item){
+      return item.get("__active__");
+    });
+  }
 });
 var FacetItem = Backbone.Model.extend({
   defaults: function() {
@@ -66,19 +71,21 @@ var FacetedSearch = Backbone.Model.extend({
       });
       item.set({"__active__": active});
     });
+    this.set("activeCount", this.get("items").getActive().length);
   },
   // not all items which are active will be shown, show only the first X
   updateVisibleItems: function() {
     var visibleCount = 0, 
         _this = this;
     this.get("items").each(function(item){
-      if (item.get("__active__") && visibleCount < _this.get("visibleCount")) {
+      if (item.get("__active__") && visibleCount < _this.get("maxVisibleCount")) {
         item.set({"__visible__": true});
         visibleCount += 1;
       } else {
         item.set({"__visible__": false});
       }
     });
+    this.set("visibleCount", visibleCount);
   },
   // updates the count property of the facet items
   updateFacetCount: function() {
@@ -125,7 +132,7 @@ var FacetedSearch = Backbone.Model.extend({
     }));
     this.set("items", items);
     items.facetedSearch = this;
-    this.set("visibleCount", options.paginationCount);
+    this.set("maxVisibleCount", options.paginationCount);
     // Find and create all Facets and FacetItems
     var _this = this;
     var facets= _.map(options.facets, function(facetDisplayName, facetName) {
@@ -167,19 +174,29 @@ var ItemView = Backbone.View.extend({
 var ItemsView = Backbone.View.extend({
   initialize: function(options) {
     this.collection.itemTemplate = _.template(options.itemTemplate);
+    fs.on("change:activeCount", this.updateButtonVisibility, this);
+    fs.on("change:visibleCount", this.updateButtonVisibility, this);
+  },
+  updateButtonVisibility: function(){
+    var fs = this.collection.facetedSearch;
+    var button = this.el.getElementsByTagName("button")[0];
+    if (fs.get("visibleCount") >= fs.get("activeCount") || fs.get("visibleCount") > fs.get("maxVisibleCount")) {
+      button.style.display = "none";
+    } else {
+      button.style.display = "";
+    }
   },
   events: {
     "click button": function(){
       var fs = this.collection.facetedSearch;
-      fs.set("visibleCount", fs.get("visibleCount") + fs.get("paginationCount"));
-      fs.update();
+      fs.set("maxVisibleCount", fs.get("maxVisibleCount") + fs.get("paginationCount"));
+      fs.updateVisibleItems();
     }
   },
   render: function() {
     var itemView;
     this.el.innerHTML = this.options.itemsTemplate;
     var div = this.el.getElementsByTagName("div")[0];
-    var button = this.el.getElementsByTagName("button")[0];
     this.collection.map(function(item, position) {
       itemView = new ItemView({
         model: item
@@ -187,6 +204,7 @@ var ItemsView = Backbone.View.extend({
       itemView.render();
       div.appendChild(itemView.el);
     });
+    this.updateButtonVisibility.call(this);
   }
 });
 var FacetItemView = Backbone.View.extend({
