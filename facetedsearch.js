@@ -2,7 +2,9 @@
 var Item = Backbone.Model.extend({
   defaults: function() {
     return {
+      // if the filters as set by the facets apply to an item, __active__ is true
       "__active__": true,
+      // if the item is currently actually visible as determined by the maxVisibleCount
       "__visible__": false
     };
   }
