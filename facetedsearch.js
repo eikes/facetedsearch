@@ -125,7 +125,7 @@ function filter() {
     var filtersApply = true;
     _.each(settings.state.filters, function(filter, facet) {
       if ($.isArray(item[facet])) {
-        var inters = _.intersect(item[facet], filter);
+        var inters = _.intersection(item[facet], filter);
         if (inters.length == 0) {
           filtersApply = false;
         } else if (filter.length > inters.length) {
