@@ -239,8 +239,8 @@ function createFacetUI() {
   });
   // Append total result count
   var bottom = $(settings.bottomContainer);
-  countHtml = _.template(settings.countTemplate, {count: settings.currentResults.length});
-  $(bottom).append(countHtml);
+  countHtml = _.template(settings.countTemplate);
+  $(bottom).append(countHtml({count: settings.currentResults.length}));
   // generate the "order by" options:
   var ordertemplate = _.template(settings.orderByTemplate);
   var itemHtml = $(ordertemplate({'options': settings.orderByOptions}));
@@ -303,8 +303,8 @@ function updateFacetUI() {
       }
     });
   });
-  countHtml = _.template(settings.countTemplate, {count: settings.currentResults.length});
-  $(settings.facetSelector + ' .facettotalcount').replaceWith(countHtml);
+  countHtml = _.template(settings.countTemplate);
+  $(settings.facetSelector + ' .facettotalcount').replaceWith(countHtml({count: settings.currentResults.length}));
 }
 
 /**
